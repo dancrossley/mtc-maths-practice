@@ -18,12 +18,18 @@
     <section id="question-screen" class="screen hidden">
       <header class="status-bar">
         <span id="question-counter">Question 1 of 25</span>
+        <button id="pause-btn" class="pause-btn hidden" aria-label="Pause test">Pause</button>
         <span id="score-display">Score: 0</span>
       </header>
 
       <div class="timer-wrap">
         <div id="timer-bar" class="timer-bar"></div>
         <span id="timer-text" class="timer-text">6</span>
+      </div>
+
+      <div class="question-wrap">
+      <div id="pause-overlay" class="pause-overlay hidden">
+        <p class="pause-label">Paused</p>
       </div>
 
       <div id="question-card" class="question-card">
@@ -41,6 +47,7 @@
         </form>
         <div id="feedback" class="feedback" aria-live="polite"></div>
       </div>
+      </div><!-- /.question-wrap -->
     </section>
 
     <section id="results-screen" class="screen hidden">
