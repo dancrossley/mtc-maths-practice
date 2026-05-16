@@ -1,17 +1,17 @@
 :root {
-  --bg: #f7f9fc;
-  --card: #ffffff;
-  --text: #1c2330;
-  --muted: #6b7280;
-  --accent: #3b82f6;
-  --accent-dark: #2563eb;
-  --correct: #16a34a;
-  --correct-bg: #dcfce7;
-  --wrong: #dc2626;
-  --wrong-bg: #fee2e2;
-  --amber: #f59e0b;
-  --border: #e5e7eb;
-  --shadow: 0 6px 24px rgba(16, 24, 40, 0.08);
+  --bg: #1a1040;
+  --card: #2d1b69;
+  --text: #f0e6ff;
+  --muted: #a78bca;
+  --accent: #7c3aed;
+  --accent-dark: #5b21b6;
+  --correct: #22c55e;
+  --correct-bg: #14532d;
+  --wrong: #f87171;
+  --wrong-bg: #450a0a;
+  --amber: #fbbf24;
+  --border: #4c1d95;
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
 * { box-sizing: border-box; }
@@ -74,7 +74,7 @@ h1 {
 }
 .primary-btn:hover { background: var(--accent-dark); }
 .primary-btn:active { transform: scale(0.98); }
-.primary-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+.primary-btn:disabled { background: var(--muted); cursor: not-allowed; }
 
 .status-bar {
   display: flex;
@@ -106,7 +106,7 @@ h1 {
 .pause-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(247, 249, 252, 0.92);
+  background: rgba(26, 16, 64, 0.92);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -157,7 +157,7 @@ h1 {
   font-size: 11px;
   font-weight: 700;
   color: var(--text);
-  text-shadow: 0 0 2px rgba(255,255,255,0.7);
+  text-shadow: 0 0 2px rgba(0,0,0,0.7);
 }
 
 .question-card {
@@ -191,12 +191,12 @@ h1 {
   border: 2px solid var(--border);
   border-radius: 10px;
   outline: none;
-  background: #fafbfc;
+  background: #241454;
   color: var(--text);
   caret-color: transparent;
   transition: border-color 120ms ease;
 }
-.answer-input:disabled { background: #f3f4f6; color: var(--muted); }
+.answer-input:disabled { background: var(--card); color: var(--muted); }
 
 .numpad {
   display: grid;
@@ -225,7 +225,7 @@ h1 {
   transition: background 100ms ease, transform 60ms ease, border-color 100ms ease;
 }
 .numpad-btn:hover { border-color: var(--accent); }
-.numpad-btn:active { transform: scale(0.96); background: #eef2f7; }
+.numpad-btn:active { transform: scale(0.96); background: var(--accent-dark); }
 .numpad-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
 .numpad-btn.action {
