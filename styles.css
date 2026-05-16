@@ -85,6 +85,50 @@ h1 {
   margin-bottom: 16px;
 }
 
+.pause-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+.pause-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pause-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.question-wrap {
+  position: relative;
+}
+
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(247, 249, 252, 0.92);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+.pause-label {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.question-card.paused {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
 .timer-wrap {
   position: relative;
   background: var(--border);

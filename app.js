@@ -9,6 +9,7 @@ const resultsScreen = document.getElementById('results-screen');
 
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
+const pauseBtn = document.getElementById('pause-btn');
 
 const counterEl = document.getElementById('question-counter');
 const scoreEl = document.getElementById('score-display');
@@ -19,6 +20,7 @@ const questionText = document.getElementById('question-text');
 const answerForm = document.getElementById('answer-form');
 const answerInput = document.getElementById('answer-input');
 const feedbackEl = document.getElementById('feedback');
+const pauseOverlay = document.getElementById('pause-overlay');
 
 const finalScoreEl = document.getElementById('final-score');
 const mistakesHeading = document.getElementById('mistakes-heading');
@@ -31,6 +33,9 @@ let mistakes = [];
 let timeoutId = null;
 let countdownId = null;
 let acceptingAnswer = false;
+let paused = false;
+let questionStartTime = 0;
+let timeElapsedBeforePause = 0;
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -71,6 +76,8 @@ function startTest() {
   currentIndex = 0;
   score = 0;
   mistakes = [];
+  paused = false;
+  pauseBtn.classList.remove('hidden');
   showScreen(questionScreen);
   loadQuestion();
 }
@@ -78,6 +85,8 @@ function startTest() {
 function loadQuestion() {
   const q = questions[currentIndex];
   acceptingAnswer = true;
+  paused = false;
+  timeElapsedBeforePause = 0;
 
   counterEl.textContent = `Question ${currentIndex + 1} of ${TOTAL_QUESTIONS}`;
   scoreEl.textContent = `Score: ${score}`;
@@ -85,13 +94,17 @@ function loadQuestion() {
   feedbackEl.textContent = '';
   feedbackEl.className = 'feedback';
   questionCard.className = 'question-card';
+  pauseOverlay.classList.add('hidden');
 
   answerInput.disabled = false;
   answerInput.value = '';
   answerInput.focus();
 
+  pauseBtn.textContent = 'Pause';
+  pauseBtn.disabled = false;
+
   resetTimer();
-  startTimer();
+  startTimer(TIME_PER_QUESTION_MS);
 }
 
 function resetTimer() {
@@ -104,29 +117,25 @@ function resetTimer() {
   void timerBar.offsetWidth;
 }
 
-function startTimer() {
-  timerBar.style.transition = `width ${TIME_PER_QUESTION_MS}ms linear`;
+function startTimer(remainingMs) {
+  questionStartTime = Date.now();
+
+  timerBar.style.transition = `width ${remainingMs}ms linear`;
   timerBar.style.width = '0%';
 
-  let remaining = TIME_PER_QUESTION_MS / 1000;
-  timerText.textContent = remaining.toFixed(0);
   countdownId = setInterval(() => {
-    remaining -= 1;
-    if (remaining <= 0) {
-      timerText.textContent = '0';
-      clearInterval(countdownId);
-      return;
-    }
-    timerText.textContent = remaining.toFixed(0);
-    if (remaining <= 1) {
+    const elapsed = Date.now() - questionStartTime + timeElapsedBeforePause;
+    const remainingSec = Math.max(0, (TIME_PER_QUESTION_MS - elapsed) / 1000);
+    timerText.textContent = Math.ceil(remainingSec).toString();
+    if (remainingSec <= 1) {
       timerBar.classList.remove('warn');
       timerBar.classList.add('danger');
-    } else if (remaining <= 2) {
+    } else if (remainingSec <= 2) {
       timerBar.classList.add('warn');
     }
-  }, 1000);
+  }, 200);
 
-  timeoutId = setTimeout(handleTimeout, TIME_PER_QUESTION_MS);
+  timeoutId = setTimeout(handleTimeout, remainingMs);
 }
 
 function stopTimers() {
@@ -134,15 +143,53 @@ function stopTimers() {
   if (countdownId) { clearInterval(countdownId); countdownId = null; }
 }
 
+function pauseTest() {
+  if (!acceptingAnswer || paused) return;
+  paused = true;
+
+  const elapsed = Date.now() - questionStartTime + timeElapsedBeforePause;
+  const fraction = Math.max(0, 1 - elapsed / TIME_PER_QUESTION_MS);
+  stopTimers();
+  timeElapsedBeforePause = elapsed;
+
+  timerBar.style.transition = 'none';
+  timerBar.style.width = `${fraction * 100}%`;
+
+  answerInput.disabled = true;
+  questionCard.classList.add('paused');
+  pauseOverlay.classList.remove('hidden');
+  pauseBtn.textContent = 'Resume';
+}
+
+function resumeTest() {
+  if (!paused) return;
+  paused = false;
+
+  pauseOverlay.classList.add('hidden');
+  questionCard.classList.remove('paused');
+  answerInput.disabled = false;
+  answerInput.focus();
+  pauseBtn.textContent = 'Pause';
+
+  const remainingMs = Math.max(0, TIME_PER_QUESTION_MS - timeElapsedBeforePause);
+
+  void timerBar.offsetWidth;
+  timerBar.style.transition = `width ${remainingMs}ms linear`;
+  timerBar.style.width = '0%';
+
+  startTimer(remainingMs);
+}
+
 function handleSubmit(event) {
   event.preventDefault();
-  if (!acceptingAnswer) return;
+  if (!acceptingAnswer || paused) return;
   const raw = answerInput.value.trim();
   if (raw === '') return;
   const given = Number(raw);
   if (!Number.isFinite(given)) return;
 
   acceptingAnswer = false;
+  pauseBtn.disabled = true;
   stopTimers();
 
   const q = questions[currentIndex];
@@ -165,6 +212,7 @@ function handleSubmit(event) {
 function handleTimeout() {
   if (!acceptingAnswer) return;
   acceptingAnswer = false;
+  pauseBtn.disabled = true;
   stopTimers();
   answerInput.disabled = true;
 
@@ -187,6 +235,7 @@ function advance() {
 
 function showResults() {
   stopTimers();
+  pauseBtn.classList.add('hidden');
   finalScoreEl.textContent = `Score: ${score} / ${TOTAL_QUESTIONS}`;
   mistakesList.innerHTML = '';
 
@@ -214,5 +263,6 @@ function showResults() {
 startBtn.addEventListener('click', startTest);
 restartBtn.addEventListener('click', startTest);
 answerForm.addEventListener('submit', handleSubmit);
+pauseBtn.addEventListener('click', () => paused ? resumeTest() : pauseTest());
 
 window.generateQuestions = generateQuestions;
