@@ -283,6 +283,97 @@ h1 {
 .mistakes-list .mistake-a { color: var(--correct); }
 .mistakes-list .mistake-given { color: var(--wrong); font-size: 14px; }
 
+#name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.name-input {
+  width: 100%;
+  max-width: 280px;
+  font-size: 22px;
+  text-align: center;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  background: #fafbfc;
+  color: var(--text);
+  font-family: inherit;
+  transition: border-color 120ms ease;
+}
+.name-input:focus { border-color: var(--accent); }
+
+.user-greeting {
+  margin: 4px 0 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.user-history {
+  margin: 8px 0 24px;
+}
+
+.results-history {
+  margin: 0 0 24px;
+}
+
+.history-empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.history-summary {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.history-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.history-list li:last-child { border-bottom: none; }
+
+.history-score { font-weight: 600; color: var(--text); }
+.history-date { color: var(--muted); }
+
+.screen-footer {
+  margin-top: 20px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 6px 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-btn:hover { color: var(--accent); }
+
 @media (max-width: 420px) {
   .container { padding: 16px 12px 32px; }
   .screen { padding: 24px 18px; }

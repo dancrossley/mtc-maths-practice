@@ -2,10 +2,22 @@ const TOTAL_QUESTIONS = 25;
 const TIME_PER_QUESTION_MS = 6000;
 const TIMEOUT_REVEAL_MS = 1500;
 const FEEDBACK_FLASH_MS = 500;
+const MAX_HISTORY = 20;
+const RECENT_COUNT = 5;
+const STORAGE_KEY_USERS = 'mtc.users';
+const STORAGE_KEY_CURRENT = 'mtc.currentUser';
 
+const nameScreen = document.getElementById('name-screen');
 const startScreen = document.getElementById('start-screen');
 const questionScreen = document.getElementById('question-screen');
 const resultsScreen = document.getElementById('results-screen');
+
+const nameForm = document.getElementById('name-form');
+const nameInput = document.getElementById('name-input');
+const userGreeting = document.getElementById('user-greeting');
+const userHistory = document.getElementById('user-history');
+const switchUserBtn = document.getElementById('switch-user-btn');
+const resultsHistory = document.getElementById('results-history');
 
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
@@ -41,6 +53,84 @@ let acceptingAnswer = false;
 let paused = false;
 let questionStartTime = 0;
 let timeElapsedBeforePause = 0;
+let currentUser = null;
+
+function loadUsers() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_USERS);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveUsers(users) {
+  try {
+    localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+  } catch {}
+}
+
+function getCurrentUser() {
+  try {
+    return localStorage.getItem(STORAGE_KEY_CURRENT) || null;
+  } catch {
+    return null;
+  }
+}
+
+function setCurrentUser(name) {
+  try {
+    if (name) localStorage.setItem(STORAGE_KEY_CURRENT, name);
+    else localStorage.removeItem(STORAGE_KEY_CURRENT);
+  } catch {}
+}
+
+function findUserKey(users, name) {
+  const target = name.trim().toLowerCase();
+  return Object.keys(users).find((k) => k.toLowerCase() === target) || null;
+}
+
+function ensureUser(name) {
+  const users = loadUsers();
+  const existing = findUserKey(users, name);
+  const key = existing || name.trim();
+  if (!existing) {
+    users[key] = { results: [] };
+    saveUsers(users);
+  }
+  return key;
+}
+
+function recordResult(name, scoreValue, total) {
+  const users = loadUsers();
+  const key = findUserKey(users, name) || name.trim();
+  if (!users[key]) users[key] = { results: [] };
+  users[key].results.unshift({
+    score: scoreValue,
+    total,
+    date: new Date().toISOString(),
+  });
+  if (users[key].results.length > MAX_HISTORY) {
+    users[key].results.length = MAX_HISTORY;
+  }
+  saveUsers(users);
+}
+
+function getUserStats(name) {
+  const users = loadUsers();
+  const key = findUserKey(users, name);
+  const results = key ? users[key].results : [];
+  const best = results.reduce((m, r) => (r.score > m ? r.score : m), 0);
+  return { best, results };
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -72,8 +162,97 @@ function generateQuestions() {
 }
 
 function showScreen(screen) {
-  [startScreen, questionScreen, resultsScreen].forEach(s => s.classList.add('hidden'));
+  [nameScreen, startScreen, questionScreen, resultsScreen].forEach(s => s.classList.add('hidden'));
   screen.classList.remove('hidden');
+}
+
+function showNameScreen() {
+  nameInput.value = currentUser || '';
+  showScreen(nameScreen);
+  setTimeout(() => nameInput.focus(), 0);
+}
+
+function enterStartScreen() {
+  renderStartHistory(currentUser);
+  showScreen(startScreen);
+}
+
+function renderStartHistory(name) {
+  userGreeting.textContent = `Hi, ${name}`;
+  const { best, results } = getUserStats(name);
+  userHistory.innerHTML = '';
+  if (results.length === 0) {
+    const p = document.createElement('p');
+    p.className = 'history-empty';
+    p.textContent = 'No attempts yet — good luck!';
+    userHistory.appendChild(p);
+    return;
+  }
+  const summary = document.createElement('p');
+  summary.className = 'history-summary';
+  summary.textContent = `Best: ${best} / ${TOTAL_QUESTIONS} · ${results.length} attempt${results.length === 1 ? '' : 's'}`;
+  userHistory.appendChild(summary);
+
+  const list = document.createElement('ul');
+  list.className = 'history-list';
+  for (const r of results.slice(0, RECENT_COUNT)) {
+    const li = document.createElement('li');
+    const s = document.createElement('span');
+    s.className = 'history-score';
+    s.textContent = `${r.score} / ${r.total}`;
+    const d = document.createElement('span');
+    d.className = 'history-date';
+    d.textContent = formatDate(r.date);
+    li.appendChild(s);
+    li.appendChild(d);
+    list.appendChild(li);
+  }
+  userHistory.appendChild(list);
+}
+
+function renderResultsHistory(name) {
+  const { best, results } = getUserStats(name);
+  resultsHistory.innerHTML = '';
+  if (results.length <= 1) {
+    const p = document.createElement('p');
+    p.className = 'history-empty';
+    p.textContent = 'First attempt saved!';
+    resultsHistory.appendChild(p);
+    return;
+  }
+  const summary = document.createElement('p');
+  summary.className = 'history-summary';
+  const isBest = results[0].score === best && results.slice(1).every(r => r.score < best);
+  summary.textContent = isBest
+    ? `New best! Previous best: ${results.slice(1).reduce((m, r) => Math.max(m, r.score), 0)} / ${TOTAL_QUESTIONS}`
+    : `Best: ${best} / ${TOTAL_QUESTIONS}`;
+  resultsHistory.appendChild(summary);
+
+  const list = document.createElement('ul');
+  list.className = 'history-list';
+  for (const r of results.slice(0, RECENT_COUNT)) {
+    const li = document.createElement('li');
+    const s = document.createElement('span');
+    s.className = 'history-score';
+    s.textContent = `${r.score} / ${r.total}`;
+    const d = document.createElement('span');
+    d.className = 'history-date';
+    d.textContent = formatDate(r.date);
+    li.appendChild(s);
+    li.appendChild(d);
+    list.appendChild(li);
+  }
+  resultsHistory.appendChild(list);
+}
+
+function handleNameSubmit(event) {
+  event.preventDefault();
+  const raw = nameInput.value.trim();
+  if (!raw) return;
+  const key = ensureUser(raw);
+  currentUser = key;
+  setCurrentUser(key);
+  enterStartScreen();
 }
 
 function startTest() {
@@ -244,7 +423,9 @@ function advance() {
 function showResults() {
   stopTimers();
   pauseBtn.classList.add('hidden');
+  if (currentUser) recordResult(currentUser, score, TOTAL_QUESTIONS);
   finalScoreEl.textContent = `Score: ${score} / ${TOTAL_QUESTIONS}`;
+  if (currentUser) renderResultsHistory(currentUser);
   mistakesList.innerHTML = '';
 
   if (mistakes.length === 0) {
@@ -301,5 +482,24 @@ startBtn.addEventListener('click', startTest);
 restartBtn.addEventListener('click', startTest);
 answerForm.addEventListener('submit', handleSubmit);
 pauseBtn.addEventListener('click', () => paused ? resumeTest() : pauseTest());
+nameForm.addEventListener('submit', handleNameSubmit);
+switchUserBtn.addEventListener('click', () => {
+  setCurrentUser(null);
+  currentUser = null;
+  showNameScreen();
+});
+
+function bootstrap() {
+  const saved = getCurrentUser();
+  if (saved) {
+    currentUser = saved;
+    ensureUser(saved);
+    enterStartScreen();
+  } else {
+    showNameScreen();
+  }
+}
+
+bootstrap();
 
 window.generateQuestions = generateQuestions;

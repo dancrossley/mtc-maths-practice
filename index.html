@@ -14,11 +14,33 @@
 </head>
 <body>
   <main class="container">
-    <section id="start-screen" class="screen">
+    <section id="name-screen" class="screen">
+      <h1>Who's practising?</h1>
+      <p class="subtitle">Enter your name to track your scores</p>
+      <form id="name-form" autocomplete="off">
+        <input
+          id="name-input"
+          type="text"
+          maxlength="20"
+          autocomplete="off"
+          class="name-input"
+          placeholder="Your name"
+          aria-label="Your name"
+        />
+        <button type="submit" class="primary-btn">Continue</button>
+      </form>
+    </section>
+
+    <section id="start-screen" class="screen hidden">
       <h1>Times Tables Practice</h1>
+      <p id="user-greeting" class="user-greeting"></p>
       <p class="subtitle">1× through 12×</p>
       <p class="instructions">25 questions &middot; 6 seconds each</p>
+      <div id="user-history" class="user-history"></div>
       <button id="start-btn" class="primary-btn">Start test</button>
+      <div class="screen-footer">
+        <button id="switch-user-btn" type="button" class="link-btn">Switch user</button>
+      </div>
     </section>
 
     <section id="question-screen" class="screen hidden">
@@ -76,6 +98,7 @@
     <section id="results-screen" class="screen hidden">
       <h1>Test complete</h1>
       <p id="final-score" class="final-score">Score: 0 / 25</p>
+      <div id="results-history" class="results-history"></div>
       <h2 id="mistakes-heading" class="mistakes-heading hidden">Review</h2>
       <ul id="mistakes-list" class="mistakes-list"></ul>
       <button id="restart-btn" class="primary-btn">Try again</button>
