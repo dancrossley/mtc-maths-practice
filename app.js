@@ -21,6 +21,11 @@ const answerForm = document.getElementById('answer-form');
 const answerInput = document.getElementById('answer-input');
 const feedbackEl = document.getElementById('feedback');
 const pauseOverlay = document.getElementById('pause-overlay');
+const numpad = document.getElementById('numpad');
+const backspaceBtn = document.getElementById('backspace-btn');
+const submitBtn = document.getElementById('submit-btn');
+
+const MAX_ANSWER_LENGTH = 3;
 
 const finalScoreEl = document.getElementById('final-score');
 const mistakesHeading = document.getElementById('mistakes-heading');
@@ -98,7 +103,7 @@ function loadQuestion() {
 
   answerInput.disabled = false;
   answerInput.value = '';
-  answerInput.focus();
+  setNumpadEnabled(true);
 
   pauseBtn.textContent = 'Pause';
   pauseBtn.disabled = false;
@@ -156,6 +161,7 @@ function pauseTest() {
   timerBar.style.width = `${fraction * 100}%`;
 
   answerInput.disabled = true;
+  setNumpadEnabled(false);
   questionCard.classList.add('paused');
   pauseOverlay.classList.remove('hidden');
   pauseBtn.textContent = 'Resume';
@@ -168,7 +174,7 @@ function resumeTest() {
   pauseOverlay.classList.add('hidden');
   questionCard.classList.remove('paused');
   answerInput.disabled = false;
-  answerInput.focus();
+  setNumpadEnabled(true);
   pauseBtn.textContent = 'Pause';
 
   const remainingMs = Math.max(0, TIME_PER_QUESTION_MS - timeElapsedBeforePause);
@@ -190,6 +196,7 @@ function handleSubmit(event) {
 
   acceptingAnswer = false;
   pauseBtn.disabled = true;
+  setNumpadEnabled(false);
   stopTimers();
 
   const q = questions[currentIndex];
@@ -213,6 +220,7 @@ function handleTimeout() {
   if (!acceptingAnswer) return;
   acceptingAnswer = false;
   pauseBtn.disabled = true;
+  setNumpadEnabled(false);
   stopTimers();
   answerInput.disabled = true;
 
@@ -259,6 +267,35 @@ function showResults() {
   }
   showScreen(resultsScreen);
 }
+
+function setNumpadEnabled(enabled) {
+  numpad.querySelectorAll('button').forEach((b) => { b.disabled = !enabled; });
+}
+
+function appendDigit(d) {
+  if (!acceptingAnswer || paused) return;
+  if (answerInput.value.length >= MAX_ANSWER_LENGTH) return;
+  answerInput.value += d;
+}
+
+function backspaceDigit() {
+  if (!acceptingAnswer || paused) return;
+  answerInput.value = answerInput.value.slice(0, -1);
+}
+
+numpad.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-digit]');
+  if (!btn) return;
+  appendDigit(btn.dataset.digit);
+});
+
+backspaceBtn.addEventListener('click', backspaceDigit);
+
+document.addEventListener('keydown', (e) => {
+  if (questionScreen.classList.contains('hidden')) return;
+  if (e.key >= '0' && e.key <= '9') appendDigit(e.key);
+  else if (e.key === 'Backspace') { e.preventDefault(); backspaceDigit(); }
+});
 
 startBtn.addEventListener('click', startTest);
 restartBtn.addEventListener('click', startTest);
