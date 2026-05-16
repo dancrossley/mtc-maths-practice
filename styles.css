@@ -300,7 +300,7 @@ h1 {
   border: 2px solid var(--border);
   border-radius: 10px;
   outline: none;
-  background: #fafbfc;
+  background: #241454;
   color: var(--text);
   font-family: inherit;
   transition: border-color 120ms ease;
