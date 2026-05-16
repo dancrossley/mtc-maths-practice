@@ -191,16 +191,56 @@ h1 {
   border: 2px solid var(--border);
   border-radius: 10px;
   outline: none;
+  background: #fafbfc;
+  color: var(--text);
+  caret-color: transparent;
   transition: border-color 120ms ease;
-  -moz-appearance: textfield;
 }
-.answer-input::-webkit-outer-spin-button,
-.answer-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.answer-input:focus { border-color: var(--accent); }
 .answer-input:disabled { background: #f3f4f6; color: var(--muted); }
+
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.numpad-btn {
+  font-family: inherit;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  min-height: 64px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background 100ms ease, transform 60ms ease, border-color 100ms ease;
+}
+.numpad-btn:hover { border-color: var(--accent); }
+.numpad-btn:active { transform: scale(0.96); background: #eef2f7; }
+.numpad-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.numpad-btn.action {
+  background: var(--border);
+  border-color: transparent;
+  color: var(--muted);
+}
+.numpad-btn.action img { width: 28px; height: 28px; display: block; }
+
+.numpad-btn.submit {
+  background: var(--correct);
+  color: white;
+}
+.numpad-btn.submit:hover { border-color: transparent; background: #15803d; }
+.numpad-btn.submit:active { background: #166534; }
 
 .feedback {
   margin-top: 16px;
@@ -248,4 +288,6 @@ h1 {
   .screen { padding: 24px 18px; }
   .question-text { font-size: 44px; }
   .answer-input { font-size: 32px; }
+  .numpad-btn { font-size: 24px; min-height: 56px; }
+  .numpad-btn.action img { width: 24px; height: 24px; }
 }

@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
   <title>Times Tables Practice</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Times Tables" />
+  <meta name="theme-color" content="#3b82f6" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -37,13 +43,30 @@
         <form id="answer-form" autocomplete="off">
           <input
             id="answer-input"
-            type="number"
-            inputmode="numeric"
-            pattern="[0-9]*"
+            type="text"
+            inputmode="none"
+            readonly
             class="answer-input"
             aria-label="Your answer"
           />
-          <button type="submit" class="primary-btn">Submit</button>
+          <div class="numpad" id="numpad">
+            <button type="button" class="numpad-btn" data-digit="1">1</button>
+            <button type="button" class="numpad-btn" data-digit="2">2</button>
+            <button type="button" class="numpad-btn" data-digit="3">3</button>
+            <button type="button" class="numpad-btn" data-digit="4">4</button>
+            <button type="button" class="numpad-btn" data-digit="5">5</button>
+            <button type="button" class="numpad-btn" data-digit="6">6</button>
+            <button type="button" class="numpad-btn" data-digit="7">7</button>
+            <button type="button" class="numpad-btn" data-digit="8">8</button>
+            <button type="button" class="numpad-btn" data-digit="9">9</button>
+            <button type="button" id="backspace-btn" class="numpad-btn action backspace" aria-label="Backspace">
+              <img src="icons/backspace.svg" alt="" />
+            </button>
+            <button type="button" class="numpad-btn" data-digit="0">0</button>
+            <button type="submit" id="submit-btn" class="numpad-btn action submit" aria-label="Submit">
+              <img src="icons/submit.svg" alt="" />
+            </button>
+          </div>
         </form>
         <div id="feedback" class="feedback" aria-live="polite"></div>
       </div>
@@ -60,5 +83,10 @@
   </main>
 
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+    }
+  </script>
 </body>
 </html>
