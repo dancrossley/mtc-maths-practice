@@ -283,6 +283,49 @@ h1 {
 .mistakes-list .mistake-a { color: var(--correct); }
 .mistakes-list .mistake-given { color: var(--wrong); font-size: 14px; }
 
+.splash-screen {
+  cursor: pointer;
+  padding: 16px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease;
+}
+.splash-screen:hover { transform: translateY(-2px); }
+.splash-screen:active { transform: scale(0.99); }
+.splash-screen:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.splash-image {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+
+.splash-cta {
+  margin: 4px 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  animation: splash-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes splash-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
 #name-form {
   display: flex;
   flex-direction: column;
@@ -300,7 +343,7 @@ h1 {
   border: 2px solid var(--border);
   border-radius: 10px;
   outline: none;
-  background: #fafbfc;
+  background: #241454;
   color: var(--text);
   font-family: inherit;
   transition: border-color 120ms ease;

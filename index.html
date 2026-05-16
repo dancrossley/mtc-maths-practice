@@ -14,7 +14,12 @@
 </head>
 <body>
   <main class="container">
-    <section id="name-screen" class="screen">
+    <section id="splash-screen" class="screen splash-screen" role="button" tabindex="0" aria-label="Tap to start">
+      <img src="icons/splash.png" alt="" class="splash-image" />
+      <p class="splash-cta">Tap to start</p>
+    </section>
+
+    <section id="name-screen" class="screen hidden">
       <h1>Who's practising?</h1>
       <p class="subtitle">Enter your name to track your scores</p>
       <form id="name-form" autocomplete="off">

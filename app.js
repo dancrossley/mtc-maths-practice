@@ -7,6 +7,7 @@ const RECENT_COUNT = 5;
 const STORAGE_KEY_USERS = 'mtc.users';
 const STORAGE_KEY_CURRENT = 'mtc.currentUser';
 
+const splashScreen = document.getElementById('splash-screen');
 const nameScreen = document.getElementById('name-screen');
 const startScreen = document.getElementById('start-screen');
 const questionScreen = document.getElementById('question-screen');
@@ -162,8 +163,13 @@ function generateQuestions() {
 }
 
 function showScreen(screen) {
-  [nameScreen, startScreen, questionScreen, resultsScreen].forEach(s => s.classList.add('hidden'));
+  [splashScreen, nameScreen, startScreen, questionScreen, resultsScreen].forEach(s => s.classList.add('hidden'));
   screen.classList.remove('hidden');
+}
+
+function leaveSplash() {
+  if (currentUser) enterStartScreen();
+  else showNameScreen();
 }
 
 function showNameScreen() {
@@ -494,11 +500,17 @@ function bootstrap() {
   if (saved) {
     currentUser = saved;
     ensureUser(saved);
-    enterStartScreen();
-  } else {
-    showNameScreen();
   }
+  showScreen(splashScreen);
 }
+
+splashScreen.addEventListener('click', leaveSplash);
+splashScreen.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    leaveSplash();
+  }
+});
 
 bootstrap();
 
