@@ -1,4 +1,4 @@
-const CACHE = 'ttp-v4';
+const CACHE = 'ttp-v5';
 const ASSETS = [
   './',
   'index.html',
@@ -9,8 +9,9 @@ const ASSETS = [
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-512-maskable.png',
-  'icons/backspace.svg',
-  'icons/submit.svg',
+  'icons/backspace.png',
+  'icons/submit.png',
+  'icons/splash.png',
   'screenshots/desktop.png',
   'screenshots/mobile.png'
 ];
