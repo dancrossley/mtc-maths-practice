@@ -27,10 +27,14 @@ html, body {
 body {
   background-color: var(--bg);
   background-image: url('icons/main_background.png');
-  background-size: contain;
-  background-position: center top;
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+body:has(#splash-screen:not(.hidden)) {
+  background-image: none;
 }
 
 .container {
