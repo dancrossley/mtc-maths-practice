@@ -19,10 +19,18 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: url('icons/main_background.png');
+  background-size: contain;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .container {
@@ -32,11 +40,21 @@ html, body {
 }
 
 .screen {
-  background: var(--card);
+  background: rgba(26, 16, 64, 0.72);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-radius: 16px;
   box-shadow: var(--shadow);
   padding: 32px 28px;
   text-align: center;
+}
+
+.screen.splash-screen {
+  background: var(--card);
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .hidden { display: none !important; }
